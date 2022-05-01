@@ -85,18 +85,19 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://federicazoe.github.io/gradetools/">gradetools</a></span><span class="op">)</span></code></pre></div>
-<p>For this vignette we assume that you have already familiarized yourself with the basic functionalities of gradetools (see the vignette “how-to-grade-with-gradetools”). <code><a href="../reference/assist_grading_functions.html">assist_grading()</a></code> and <code><a href="../reference/assist_grading_functions.html">assist_team_grading()</a></code> are essentially wrappers for <code><a href="../reference/assist_grading_functions.html">assist_advanced_grading()</a></code>, so all functionalities available in those functions are also available in this function.</p>
-<p>The purpose of this vignette is to provide a different grading scenario which involves:</p>
+<p>For this vignette we assume that you have already familiarized yourself with the various functionalities of gradetools (<a href="https://federicazoe.github.io/gradetools/articles/a-grading-with-gradetools.html">individual</a>, <a href="https://federicazoe.github.io/gradetools/articles/c-extended-capability-teams.html">team</a> and <a href="https://federicazoe.github.io/gradetools/articles/d-extended-capability-github.html">GitHub</a> grading).</p>
+<p>The purpose of this vignette is to provide a comprehensive grading scenario involving:</p>
 <ul>
-<li>Project instead of homework or quiz</li>
-<li>Team grading</li>
-<li>Assignments on Github</li>
-<li>Multiple files per submission</li>
+<li>A team project (instead of homework or quiz) on GitHub</li>
+<li>Multiple files per submission (we will grade <code>README.md</code>, <code>proposal.md</code> and <code>presentation.Rmd</code>)</li>
 <li>Pushing issues and feedback to GitHub</li>
 </ul>
 <div class="section level2">
-<h2 id="cloning-project-repos">Cloning project repos<a class="anchor" aria-label="anchor" href="#cloning-project-repos"></a>
+<h2 id="preparing-the-material">Preparing the material<a class="anchor" aria-label="anchor" href="#preparing-the-material"></a>
 </h2>
+<div class="section level3">
+<h3 id="cloning-project-repos">Cloning project repos<a class="anchor" aria-label="anchor" href="#cloning-project-repos"></a>
+</h3>
 <p>This vignette uses two GitHub repositories (repos) from the <a href="https://github.com/gradetools-test-course" class="external-link">gradetools-test-course</a> Github organization:</p>
 <ul>
 <li>
@@ -104,17 +105,70 @@
 <li>
 <a href="https://github.com/gradetools-test-course/final-project-team-gamma" class="external-link">final-project-team-gamma</a> for the second team submission.</li>
 </ul>
+<p>These repos can be cloned by running:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">class_github_name</span> <span class="op">&lt;-</span> <span class="st">"gradetools-test-course"</span>
+<span class="va">repo_template_name</span> <span class="op">&lt;-</span> <span class="st">"final-project-team-"</span>
+<span class="va">repos_local_path</span> <span class="op">&lt;-</span> <span class="st">"final-project-team-repos"</span>
+
+<span class="fu">ghclass</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ghclass/man/local_repo.html" class="external-link">local_repo_clone</a></span><span class="op">(</span>
+  repo <span class="op">=</span> <span class="fu">ghclass</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ghclass/man/org_details.html" class="external-link">org_repos</a></span><span class="op">(</span><span class="va">class_github_name</span>, <span class="va">repo_template_name</span><span class="op">)</span>,
+  local_path <span class="op">=</span> <span class="va">repos_local_path</span>
+<span class="op">)</span></code></pre></div>
+<p>The final project submissions were adapted from the <a href="https://github.com/mine-cetinkaya-rundel/ds-final-project" class="external-link">GitHub repository template</a> accompanying “The 5Ws and 1H of Term Projects in the Introductory Data Science Classroom” by Çetinkaya-Rundel, Dogucu, and Rummerfield (2022).</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="creating-issues-and-grading-assignments">Creating issues and grading assignments<a class="anchor" aria-label="anchor" href="#creating-issues-and-grading-assignments"></a>
+<h2 id="making-the-roster">Making the roster<a class="anchor" aria-label="anchor" href="#making-the-roster"></a>
 </h2>
-<p>This vignette assumes knowledge on how to grade with gradetools. We will note an issue on one submission and skip grading the rest of the submissions.</p>
+<p>Most typically, the roster would be downloaded from a school learning management system and saved into a .csv file whose path would be provided to one of the assist grading functions. For this example, we are going to create a minimal roster that only has the two columns required for team grading.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">roster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
+  student_identifier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"federicazoe"</span>, <span class="st">"CatalinaMedina"</span>, <span class="st">"mdogucu"</span><span class="op">)</span>,
+  team_identifier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gamma"</span>, <span class="st">"poisson"</span>, <span class="st">"poisson"</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">roster</span>, <span class="st">"roster.csv"</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="making-the-rubric">Making the rubric<a class="anchor" aria-label="anchor" href="#making-the-rubric"></a>
+</h2>
+<p>We should always use <code><a href="../reference/create_rubric_template.html">create_rubric_template()</a></code> to begin formatting our rubric. Here we will create a rubric using a positive grading scheme.</p>
+<p>We would like to grade three files for each team: <code>README.md</code>, <code>proposal.md</code> and <code>presentation.Rmd</code>. We will create a rubric item for each file to begin grading (further items can be added while grading).</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/create_rubric_template.html">create_rubric_template</a></span><span class="op">(</span>
+  rubric_path <span class="op">=</span> <span class="st">"rubric.csv"</span>, 
+  negative_grading <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span>
+
+<span class="va">rubric</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"rubric.csv"</span>, show_col_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+
+<span class="va">rubric</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
+  names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"README"</span>, <span class="st">"Proposal"</span>, <span class="st">"Presentation"</span>, <span class="st">"all_questions"</span><span class="op">)</span>,
+  total_points <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span>, 
+  prompt_code <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1a"</span>, <span class="st">"1a"</span>, <span class="st">"1a"</span>, <span class="st">"0"</span><span class="op">)</span>, 
+  prompt_message <span class="op">=</span> <span class="st">""</span>, 
+  feedback <span class="op">=</span> <span class="st">""</span>, 
+  points_to_remove <span class="op">=</span> <span class="st">""</span>
+<span class="op">)</span>
+
+<span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">rubric</span>, <span class="st">"rubric.csv"</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="working-directory">Working directory<a class="anchor" aria-label="anchor" href="#working-directory"></a>
+</h2>
+<p>After cloning the repos and creating the roster and rubric, your working directory should look like the following:</p>
+<!-- v5-directory.png -->
+<iframe src="https://drive.google.com/file/d/1atL8xHeDOz7_HHuuIO6NUKE8tzXlrwp2/preview" width="640" height="480" allow="autoplay">
+</iframe>
+<p>Note: for simplicity, the figure above does not include files and folders present in the cloned repos that are not used for this example.</p>
 </div>
 <div class="section level2">
 <h2 id="credits">Credits<a class="anchor" aria-label="anchor" href="#credits"></a>
 </h2>
 <p>The extended functionalities for assignments managed using GitHub were possible thanks to the functions in the <a href="https://rundel.github.io/ghclass/index.html" class="external-link">ghclass</a> package.</p>
-<p>The final project submissions were made from the <a href="https://github.com/mine-cetinkaya-rundel/ds-final-project" class="external-link">GitHub repository template</a> accompanying “The 5Ws and 1H of Term Projects in the Introductory Data Science Classroom” by Çetinkaya-Rundel, Dogucu, and Rummerfield (2022).</p>
+<p>The final project submissions were adapted from the <a href="https://github.com/mine-cetinkaya-rundel/ds-final-project" class="external-link">GitHub repository template</a> accompanying “The 5Ws and 1H of Term Projects in the Introductory Data Science Classroom” by Çetinkaya-Rundel, Dogucu, and Rummerfield (2022).</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
