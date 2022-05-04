@@ -52,6 +52,9 @@
     <loc>https://federicazoe.github.io/gradetools/reference/create_final_grade_sheet.html</loc>
   </url>
   <url>
+    <loc>https://federicazoe.github.io/gradetools/reference/create_grading_progress_log.html</loc>
+  </url>
+  <url>
     <loc>https://federicazoe.github.io/gradetools/reference/create_issues_github.html</loc>
   </url>
   <url>
@@ -59,9 +62,6 @@
   </url>
   <url>
     <loc>https://federicazoe.github.io/gradetools/reference/create_rubric_template.html</loc>
-  </url>
-  <url>
-    <loc>https://federicazoe.github.io/gradetools/reference/create_temp_grade_sheet.html</loc>
   </url>
   <url>
     <loc>https://federicazoe.github.io/gradetools/reference/delete_student_grading_progress.html</loc>

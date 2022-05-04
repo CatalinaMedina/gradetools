@@ -98,7 +98,7 @@
 <div class="section level3">
 <h3 id="cloning-project-repos">Cloning project repos<a class="anchor" aria-label="anchor" href="#cloning-project-repos"></a>
 </h3>
-<p>This vignette uses two GitHub repositories (repos) from the <a href="https://github.com/gradetools-test-course" class="external-link">gradetools-test-course</a> Github organization:</p>
+<p>This vignette uses two GitHub repositories (repos) from the <a href="https://github.com/gradetools-test-course" class="external-link">gradetools-test-course</a> GitHub organization:</p>
 <ul>
 <li>
 <a href="https://github.com/gradetools-test-course/final-project-team-poisson" class="external-link">final-project-team-poisson</a> for one team submission.</li>
@@ -145,7 +145,7 @@ gamma
 CatalinaMedina
 </td>
 <td style="text-align:left;">
-poisson
+gamma
 </td>
 </tr>
 <tr>
@@ -171,7 +171,7 @@ poisson
 <table class="table">
 <thead><tr>
 <th style="text-align:left;">
-names
+name
 </th>
 <th style="text-align:left;">
 total_points
@@ -272,15 +272,112 @@ The template for the file was unchanged. Did you miss this part or forget to pus
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section level2">
-<h2 id="working-directory">Working directory<a class="anchor" aria-label="anchor" href="#working-directory"></a>
-</h2>
+<div class="section level3">
+<h3 id="working-directory">Working directory<a class="anchor" aria-label="anchor" href="#working-directory"></a>
+</h3>
 <p>After cloning the repos and creating the roster and rubric, your working directory should look like the following:</p>
 <!-- v5-directory.png -->
 <iframe src="https://drive.google.com/file/d/1atL8xHeDOz7_HHuuIO6NUKE8tzXlrwp2/preview" width="640" height="480" allow="autoplay">
 </iframe>
 <p>Note: for simplicity, the figure above does not include files and folders present in the cloned repos that are not used for this example.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="grading">Grading<a class="anchor" aria-label="anchor" href="#grading"></a>
+</h2>
+<p>For grading, we are going to use <code><a href="../reference/assist_grading_functions.html">assist_team_grading()</a></code>. Note that <code>example_assignment_path</code> is a vector in this case, since we want to look at three files for each team.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/assist_grading_functions.html">assist_team_grading</a></span><span class="op">(</span>
+  rubric_path <span class="op">=</span> <span class="st">"rubric.csv"</span>,
+  roster_path <span class="op">=</span> <span class="st">"roster.csv"</span>,
+  grading_progress_log_path  <span class="op">=</span> <span class="st">"grading_progress_log.csv"</span>,
+  final_grade_sheet_path <span class="op">=</span> <span class="st">"final-grade-sheet.csv"</span>,
+  example_assignment_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
+    <span class="st">"final-project-team-repos/final-project-team-gamma/README.md"</span>,
+    <span class="st">"final-project-team-repos/final-project-team-gamma/proposal/proposal.md"</span>,
+    <span class="st">"final-project-team-repos/final-project-team-gamma/presentation/presentation.Rmd"</span>
+  <span class="op">)</span> ,
+  example_feedback_path <span class="op">=</span> <span class="st">"final-project-team-repos/final-project-team-gamma/feedback.md"</span>,
+  example_team_identifier <span class="op">=</span> <span class="st">"gamma"</span>,
+  github_issues <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span></code></pre></div>
+<p>Once we run the above call, all files associated to the first team in the roster will be open. When reviewing the README, we see that the summary needs to be expanded upon and that the data source was not cited. We do not have a rubric item yet for the second mistake, so we first enter ‘r’ to add a new rubric item:</p>
+<!-- v5-new-rubric-item.png -->
+<iframe src="https://drive.google.com/file/d/1lYmVUBefqKD-1pifYePqv9Re4A4ov-3i/preview" width="640" height="480" allow="autoplay">
+</iframe>
+<p>with the following information:</p>
+<!-- v5-new-rubric-item-summary.png -->
+<iframe src="https://drive.google.com/file/d/1DW2osdQ2hrFZLE1JO8oQrzRtGYTFrYEp/preview" width="640" height="480" allow="autoplay">
+</iframe>
+<p>Once the new rubric item has been created, we can assign a grade and a feedback to this team’s README by entering prompt codes ‘1a’ and ‘3a’ separated by a double hyphen.</p>
+<p>Next, we move on to this team’s proposal and notice that the template has not been filled in. We want to give the team the chance to complete the proposal for partial credit. Creating an issue can be a fast way to communicate this opportunity to the team. So we enter ‘i’ and provide an issue title and body:</p>
+<!-- v5-issue-title.png -->
+<iframe src="https://drive.google.com/file/d/15-Cx23623YNzWgwn3vJjdoztfv44j0uT/preview" width="640" height="480" allow="autoplay">
+</iframe>
+<p>After noting the issue, we enter ‘0’ to remove 100% of the points allocated to the project proposal.</p>
+<p>Finally, we move on to the presentation. This consists of an .Rmd file that we may want to visualize. Even though the console is already busy with rubric prompting, in RStudio we can click on <em>Knit</em> and view the compiled slides in the viewer.</p>
+<p>When grading this presentation, we notice:</p>
+<ul>
+<li>the title should be more specific</li>
+<li>the plot axis don’t match the order of response and exploratory variables</li>
+<li>the relationship visualized in the plot was not accounted for in the model</li>
+</ul>
+<p>Simplistic titles were expected as a common error so a rubric item already exists for this. The other two mistakes are instead specific to this submission, and so we leave personalized feedback messages for each of these. Just like with noting issues and adding new rubric items, we can provide as many personalized feedback messages as desired prior to assigning prompt codes by typing ‘p’.</p>
+<!-- v5-personalized-feedback-1.png -->
+<iframe src="https://drive.google.com/file/d/1YaJKU7hm1Eg1MmIFkc2vJna6zsWDEo2o/preview" width="640" height="480" allow="autoplay">
+</iframe>
+<!-- v5-personalized-feedback-2.png -->
+<iframe src="https://drive.google.com/file/d/1g_rCagLVN8_pkfI1SvSc7D9OuDS9wYyf/preview" width="640" height="480" allow="autoplay">
+</iframe>
+<p>Note that personalized feedback does not affect the assigned grade. If we wanted, we could add to our rubric a vague item with no specific feedback associated with it in order to remove some points after we provide personalized feedback (e.g. one that removes 0.5 points for a ‘minor error’).</p>
+<p>We finish grading team <em>gamma</em> by assigning the rubric item ‘1a’ for the presentation component. Prior to grading the next team, we can interrupt grading and push feedback and noted issues for the team <em>gamma</em> if we wish.</p>
+</div>
+<div class="section level2">
+<h2 id="pushing-feedback-and-creating-issues-on-github">Pushing feedback and creating issues on GitHub<a class="anchor" aria-label="anchor" href="#pushing-feedback-and-creating-issues-on-github"></a>
+</h2>
+<p>Once we have finished grading one or multiple students, we can push the feedback file(s) and/or create the issue(s) that we have noted while grading by using <code><a href="../reference/push_to_github.html">push_to_github()</a></code> and specifying the logical arguments <code>push_feedback</code> and <code>create_issues</code>. Because this project involves teams, we also need to set the logical argument <code>team_grading</code> to <code>TRUE</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/push_to_github.html">push_to_github</a></span><span class="op">(</span>
+  grading_progress_log_path <span class="op">=</span> <span class="st">"grading_progress_log.csv"</span>,
+  class_github_name <span class="op">=</span> <span class="st">"gradetools-test-course"</span>,
+  example_identifier <span class="op">=</span> <span class="st">"gamma"</span>,
+  example_github_repo <span class="op">=</span> <span class="st">"final-project-team-gamma"</span>,
+  push_feedback <span class="op">=</span> <span class="cn">TRUE</span>,
+  create_issues <span class="op">=</span> <span class="cn">TRUE</span>,
+  team_grading <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span></code></pre></div>
+<p>When calling this function, we will be asked whether we want to perform this actions only for assignments who have been fully graded or also for partially graded assignments.</p>
+<p>Here is an example of team <em>gamma</em>’s pushed feedback file:</p>
+<!-- v5-feedback-pushed.png -->
+<iframe src="https://drive.google.com/file/d/1aqbMuAVDukExjb20sYOwOEYOYzJ1r7EY/preview" width="640" height="480" allow="autoplay">
+</iframe>
+<p>If we set <code>create_issues</code> to <code>TRUE</code> then we will be asked if we wish to review and confirm each issue that was noted before actually creating it on GitHub. If we choose so, then the following is an example of a confirmation message that we would see:</p>
+<!-- v5-issue-confirmation-message.png -->
+<iframe src="https://drive.google.com/file/d/1W-CcIAi4SnEOFFa6TE0zUoGdKdpsDWlP/preview" width="640" height="480" allow="autoplay">
+</iframe>
+<p>Because GitHub does not currently support multiple assignees for private repositories in free organizations, all team members will be tagged in the issue body so that they will receive notification of the issue creation:</p>
+<!-- v5-issue-created.png -->
+<iframe src="https://drive.google.com/file/d/1oY0X97OZ5YNfwhjoULH46QbD7ZLrS1Z3/preview" width="640" height="480" allow="autoplay">
+</iframe>
+</div>
+<div class="section level2">
+<h2 id="regrading-a-specified-question-for-a-specified-student">Regrading a specified question, for a specified student<a class="anchor" aria-label="anchor" href="#regrading-a-specified-question-for-a-specified-student"></a>
+</h2>
+<p>Once the <em>gamma</em> team has pushed their project proposal to their repo and closed the issue, we want to go ahead and regrade this part of their final project and give them partial credit. We can do so with <code><a href="../reference/assist_regrading.html">assist_regrading()</a></code>! Note that because we wish to regrade a team, then we need to set <code>students_to_regrade</code> to <code>NULL</code> and provide the argument <code>teams_to_regrade</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu"><a href="../reference/assist_regrading.html">assist_regrading</a></span><span class="op">(</span>
+  rubric_path <span class="op">=</span> <span class="st">"rubric.csv"</span>,
+  grading_progress_log_path <span class="op">=</span> <span class="st">"grading_progress_log.csv"</span>,
+  final_grade_sheet_path <span class="op">=</span> <span class="st">"final-grade-sheet.csv"</span>,
+  questions_to_regrade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Proposal"</span><span class="op">)</span>,
+  students_to_regrade <span class="op">=</span> <span class="cn">NULL</span>,
+  teams_to_regrade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gamma"</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
+<p>We can create a new rubric item for giving them partial credit:</p>
+<!-- v5-partial-credit.png -->
+<iframe src="https://drive.google.com/file/d/1HTOqqgYWFSlSeVpNf3FKQam1cXHgq53R/preview" width="640" height="480" allow="autoplay">
+</iframe>
 </div>
 <div class="section level2">
 <h2 id="credits">Credits<a class="anchor" aria-label="anchor" href="#credits"></a>

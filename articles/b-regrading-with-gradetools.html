@@ -86,7 +86,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://federicazoe.github.io/gradetools/">gradetools</a></span><span class="op">)</span></code></pre></div>
 <p>The objective of this vignette is to demonstrate how to regrade all or certain questions from assignments previously graded with gradetools.</p>
-<p>The temporary grade sheet stores grading progress, so if it has been saved after using an assist grading function the user can resume grading or regrade at any point.</p>
+<p>The grading progress log stores grading progress, so if it has been saved after using an assist grading function the user can resume grading or regrade at any point.</p>
 <p>For this example we will use the example directory called example-directory-week09-regression in the <a href="https://github.com/gradetools-test-course/quizzes-collected-week09-regression" class="external-link">quizzes-collected-week09-regression</a> repository in our gradetools-test-course on GitHub.</p>
 <p>For our purpose we will consider the situation where we were in the process of grading and realized we assigned the wrong rubric item to a student.</p>
 <!-- v2-grading-error.png -->
@@ -100,7 +100,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/assist_regrading.html">assist_regrading</a></span><span class="op">(</span>
   rubric_path <span class="op">=</span> <span class="st">"quiz-09-lin-reg-rubric.csv"</span>, 
-  temp_grade_sheet_path <span class="op">=</span> <span class="st">"quiz-09-lin-reg-temporary-grade-sheet.csv"</span>, 
+  grading_progress_log_path <span class="op">=</span> <span class="st">"quiz-09-lin-reg-grading_progress_log.csv"</span>, 
   final_grade_sheet_path <span class="op">=</span> <span class="st">"quiz-09-lin-reg-final-grade-sheet.csv"</span>, 
   questions_to_regrade <span class="op">=</span> <span class="st">"Question 1.a"</span>,
   students_to_regrade <span class="op">=</span> <span class="st">"federicazoe"</span>
@@ -111,16 +111,12 @@
 <!-- v2-regrade-q1.png -->
 <iframe src="https://drive.google.com/file/d/1qYJVcGAsTa68rtUW5K3dsB1eCSvP0f9q/preview" width="640" height="480" allow="autoplay">
 </iframe>
-<p>One additional note is that when regrading, the user is always asked to provide the general feedback, even if it had previously been provided.</p>
-<!-- v2-regraded-q1.png -->
-<iframe src="https://drive.google.com/file/d/1fcs5MeSjYEW_npcpNq8raDoDYlrnpAE0/preview" width="640" height="480" allow="autoplay">
-</iframe>
 <p>If a user were to initiate regrading then stop grading before all <code>questions_to_regrade</code> have been regraded, the old grading progress will be retained for those questions that did not get regraded.</p>
 </div>
 <div class="section level2">
 <h2 id="final-notes">Final notes<a class="anchor" aria-label="anchor" href="#final-notes"></a>
 </h2>
-<p>Changing the rubric is not considered regrading. The temporary grade sheet saves grading progress by saving the assigned prompt codes for each question for each student. At any point a user can edit the rubric and then re run one of the assist grading functions and all associated grades and feedback will get updated. Rewriting feedback and prompt messages for clarity, or changing points associated with a question or rubric item is considered updating and is completely fine. On the other hand, the <strong>prompt codes and question names cannot be changed</strong> since they are how gradetools stores grading progress.</p>
+<p>Changing the rubric is not considered regrading. The grading progress log saves grading progress by saving the assigned prompt codes for each question for each student. At any point a user can edit the rubric and then re run one of the assist grading functions and all associated grades and feedback will get updated. Rewriting feedback and prompt messages for clarity, or changing points associated with a question or rubric item is considered updating and is completely fine. On the other hand, the <strong>prompt codes and question names cannot be changed</strong> since they are how gradetools stores grading progress.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

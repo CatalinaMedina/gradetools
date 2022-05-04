@@ -58,12 +58,12 @@
 <h2 class="pkg-version" data-toc-text="0.2.0" id="gradetools-020">gradetools 0.2.0<a class="anchor" aria-label="anchor" href="#gradetools-020"></a></h2>
 <div class="section level3">
 <h3 id="minor-changes-0-2-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-2-0"></a></h3>
-<ul><li>Added ability to leave a personalized comment in a student’s feedback file without any grade associated</li>
+<ul><li>Added ability to leave a personalized feedback message in a student’s feedback file without any grade associated</li>
 <li>Prompting is neater<ul><li>prompt codes starting with digits are user made</li>
 <li>letter prompt options are options provided by gradetools (e.g. adding rubric items, noting issues, and providing personalized feedback)</li>
 </ul></li>
 <li>Feedback files can now have the following extensions:<ul><li>Rmd</li>
-<li>md (for Github documents)</li>
+<li>md (for GitHub documents)</li>
 <li>docx (for Word documents)</li>
 <li>html</li>
 <li>pdf</li>
@@ -71,6 +71,9 @@
 <li>Moved <code>questions_to_grade</code> argument before <code>students_to_grade</code> in <code><a href="../reference/assist_grading_functions.html">assist_team_grading()</a></code>, and <code><a href="../reference/assist_grading_functions.html">assist_advanced_grading()</a></code>.</li>
 <li>Moved <code>questions_to_regrade</code> argument before <code>students_to_regrade</code> in <code><a href="../reference/assist_grading_functions.html">assist_grading()</a></code>
 </li>
+<li>temporary grade sheet is now called the grading progress log</li>
+<li>Can push feedback and create GitHub issues for partially graded assignments</li>
+<li>General feedback is not automatically regraded when regrading other assignment components</li>
 </ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
