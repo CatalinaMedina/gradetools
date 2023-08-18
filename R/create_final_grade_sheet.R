@@ -108,7 +108,12 @@ create_final_grade_sheet <- function(
     unlink(final_grade_sheet_path)
   }
   
-  write_csv(final_grade_sheet, final_grade_sheet_path)
+  final_grade_sheet %>% 
+    relocate(
+      student_identifier, team_identifier, grade, grade_decomposition, 
+      .after = last_col()
+    ) %>% 
+    write_csv(final_grade_sheet_path)
   
   ungraded_message <- paste(
     "\nNot all questions have been graded,", 
