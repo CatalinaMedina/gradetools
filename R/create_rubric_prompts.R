@@ -42,8 +42,7 @@ create_rubric_prompts <- function(rubric_list, github_issues) {
   for (q in prompt_names[prompt_names != "general_feedback"]) {
     
     q_info <- rubric_list[[q]]
-    q_name <- q_info$name
-    
+
     if (negative_grading) {
       q_prompts_code_and_messages <- paste0(
         "  ", q_info$prompt_code, ": ",
@@ -62,7 +61,8 @@ create_rubric_prompts <- function(rubric_list, github_issues) {
     
     rubric_prompts[q] <- paste(
       "*******************************************", 
-      q_name, 
+      q_info$name, 
+      paste0("Total points: ", q_info$total_points),  
       "*******************************************",
       "Enter one or more of the following options,",
       "use -- to separate multiple items.",
