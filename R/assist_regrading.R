@@ -35,10 +35,6 @@ assist_regrading <- function(
   # Check that paths are valid
   if (!file.exists(grading_progress_log_path)) {
     stop("Nothing was found at the grading_progress_log_path!")
-    
-  } else if (!file.exists(rubric_path)) {
-    stop("Nothing was found at the rubric_path!")
-    
   }
   
   # Check grading_progress_log and final grade sheets paths differ

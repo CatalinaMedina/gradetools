@@ -28,6 +28,36 @@ create_grading_progress_log <- function(
     team_grading
   ) {
   
+  roster <- readr::read_csv(roster_path, show_col_types = FALSE) %>%
+    mutate(across(everything(), as.character))
+  
+  if (sum(colnames(roster) == "student_identifier") != 1) {
+    stop("\nThe class roster must only have a column named student_identifier")
+    
+  } else if (any(duplicated(roster$student_identifier))) {
+    stop(paste0(
+      "\nThere is at least one student identifier repeated in the class roster.", 
+      "\nPlease make sure that the student_identifier is unique to the student."
+    ))
+    
+  } else if (any(is.na(roster$student_identifier))) {
+    stop("\nA student_identifier must be provided for every row of the roster.")
+    
+  }
+  
+  if (team_grading){
+    if(sum(colnames(roster) == "team_identifier") != 1) {
+      stop(paste0(
+        "\nteam_grading is set to TRUE so there must be a column in the class roster called team_identifier.",
+        "\nThis specified which team each student belongs to.",
+        "\nThe team_identifier must also be present in the example_assignment_path."
+      ))
+    } else if (any(is.na(roster$team_identifier))) {
+      stop("\nA team_identifier must be provided for every row of the roster.")
+      
+    }
+  }
+  
   # Read in class roster
   grading_progress_log_new <- readr::read_csv(roster_path, show_col_types = FALSE) %>%
     mutate(across(everything(), as.character)) %>% 

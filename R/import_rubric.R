@@ -11,6 +11,15 @@
 #' @keywords internal
 #' 
 import_rubric <- function(rubric_path) {
+  
+  if (!file.exists(rubric_path)) {
+    stop(paste0(
+      "No file exists at ", rubric_path, ". ",
+      "Are you sure that this path is correct?"
+    ))  
+    
+  }
+  
   col_names <- c(
     "name", "prompt_code", "prompt_message", 
     "feedback", "total_points"
