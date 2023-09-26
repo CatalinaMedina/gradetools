@@ -57,8 +57,9 @@ note_github_issues <- function(curr_row, curr_q) {
         "After grading use push_to_github() to push issues.",
         sep = "\n"
       ))
-      
+    
     }
+    
   }
   
   curr_row

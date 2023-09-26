@@ -102,7 +102,8 @@ create_grading_progress_log <- function(
   # Make assignment file paths
   grading_progress_log_new <- grading_progress_log_new %>% 
     mutate(assignment_path = NA) %>% 
-    mutate(assignment_missing = FALSE)
+    mutate(assignment_missing = FALSE) %>% 
+    mutate(feedback_info_updated = FALSE)
   
   if (example_assignment_path == "no_submissions") {
     grading_progress_log_new$assignment_path <- example_assignment_path
@@ -154,11 +155,11 @@ create_grading_progress_log <- function(
     grading_progress_log_old <- readr::read_csv(
       grading_progress_log_path,
       show_col_types = FALSE,
-      col_types = cols(
-        .default = col_character(),
-        assignment_missing = col_logical(),
-        grade_student = col_logical(),
-        last_time_graded = col_datetime()
+      col_types = readr::cols(
+        .default = readr::col_character(),
+        assignment_missing = readr::col_logical(),
+        grade_student = readr::col_logical(),
+        last_time_graded = readr::col_datetime()
       )
     )
     

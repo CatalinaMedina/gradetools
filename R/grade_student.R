@@ -81,6 +81,8 @@ grade_student <- function(
             
           }
           
+          curr_row$feedback_info_updated
+          
         } 
         
         display_prompt_again <- TRUE
@@ -115,6 +117,7 @@ grade_student <- function(
       } else if (question_fbk == "d" && curr_q == "general_feedback") {
         question_fbk <- "NA"
         store_feedback_codes <- TRUE
+        curr_row$updated_info <- TRUE
         
       } else { 
         question_fbk <- stringr::str_replace_all(question_fbk, c(" " = "", "--" = "---"))
@@ -158,6 +161,9 @@ grade_student <- function(
         
       }
       
+      # Update grading_status
+      curr_row$feedback_info_updated <- TRUE
+      
       grade_info <- assign_grade_write_feedback(
         grading_progress_log_row = curr_row, 
         rubric_list = rubric_list,
@@ -169,7 +175,6 @@ grade_student <- function(
         curr_row$feedback_pushed <- "FALSE"
       }
       
-      # Update grading_status
       curr_row$grading_status <- grade_info$grading_status
       curr_row$last_time_graded <- Sys.time()
       

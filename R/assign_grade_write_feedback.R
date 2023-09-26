@@ -252,7 +252,7 @@ assign_grade_write_feedback <- function(
   
   fs::file_create(grading_progress_log_row$feedback_path_Rmd)
   
-  # Determing type of file to knit feedback to
+  # Determining type of file to knit feedback to
   feedback_file_ext <- as.character(fs::path_ext(
     grading_progress_log_row$feedback_path_to_be_knitted)[1]
   )
