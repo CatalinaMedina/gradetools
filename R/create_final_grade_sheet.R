@@ -8,7 +8,7 @@
 #' @param team_grading logical, indicates if any assignment submission is associated with multiple students (e.g. team projects)
 #' 
 #' @import dplyr
-#' @improt stringr str_split
+#' @importFrom stringr str_split
 #' 
 #' @keywords internal
 #'
@@ -58,7 +58,7 @@ create_final_grade_sheet <- function(
     
   }
   
-  cols_to_remove <- c(
+  all_cols_to_remove <- c(
     "feedback_path_Rmd", 
     "feedback_path_to_be_knitted",
     "assignment_path",
@@ -77,10 +77,11 @@ create_final_grade_sheet <- function(
     "feedback_pushed"
   )
   
-  ind_cols_to_remove <- colnames(final_grade_sheet) %in% cols_to_remove
+  cols_in_final <- colnames(final_grade_sheet)
+  which_cols_to_remove <- cols_in_final[cols_in_final %in% all_cols_to_remove]
   
   final_grade_sheet <- final_grade_sheet %>% 
-    select(-(ind_cols_to_remove)) %>%
+    select(!any_of(which_cols_to_remove)) %>%
     relocate(
       student_identifier, grade, grade_decomposition, 
       .after = last_col()
