@@ -9,7 +9,8 @@
 #' @param final_grade_sheet_path string; path to save final grade sheet to. Must be a .csv
 #' @param example_assignment_path string; file path to one of the assignments to be graded. 
 #'     This file path structure will be used to determine where the other assignments to be graded are located. 
-#'     The student identifier has to be present somewhere in the file path
+#'     The student identifier has to be present somewhere in the file path.
+#'     If specified as "no_submissions", grading will proceed without automatic interaction with assignments (i.e opening and closing assignments).
 #' @param example_feedback_path string; file path to one of the assignment feedback files that will be generated as the user grades. 
 #'     This file path structure will be used to determine where the other feedback files will be stored. 
 #'     The student identifier must be present somewhere in the file name and must be the only part of the file path unique to the student. 

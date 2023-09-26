@@ -172,18 +172,23 @@ assist_regrading <- function(
           pattern = "&&&"
         ))
         
-        # Get assignment_path
-        assignment_path <- unlist(
-          stringr::str_split(grading_progress_log$assignment_path[i], ", ")
-        )
+        if (grading_progress_log$assignment_path[i] != "no_submissions") {
+          # Get assignment_path
+          assignment_path <- unlist(
+            stringr::str_split(grading_progress_log$assignment_path[i], ", ")
+          )
+          
+          doc_id <- NULL
+          
+          for(j in 1:length(assignment_path)) {
+            # Opens file
+            rstudioapi::navigateToFile(assignment_path[j])
+            
+            # Need short pause so documentId grabs the correct document
+            Sys.sleep(1)
+            doc_id[j] <- rstudioapi::documentId()
+          }
         
-        doc_id <- NULL
-        
-        for(j in 1:length(assignment_path)) {
-          rstudioapi::navigateToFile(assignment_path[j])
-          # Need short pause so documentId grabs the correct document
-          Sys.sleep(1)
-          doc_id[j] <- rstudioapi::documentId()
         }
         
         for (q in questions_to_regrade) {
@@ -242,9 +247,11 @@ assist_regrading <- function(
           
         }
         
-        # Close assignment
-        for(j in 1:length(assignment_path)) {
-          invisible(rstudioapi::documentClose(id = doc_id[j], save = FALSE))
+        if (grading_progress_log$assignment_path[i] != "no_submissions") {
+          for(j in 1:length(assignment_path)) {
+            # Close assignment
+            invisible(rstudioapi::documentClose(id = doc_id[j], save = FALSE))
+          }
         }
         
       }

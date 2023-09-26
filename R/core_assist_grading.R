@@ -29,7 +29,7 @@ core_assist_grading <- function(
   ) {
   
   # Check example_assignment_path is valid input
-  if (!is.na(example_assignment_path)) {
+  if (example_assignment_path != "no_submissions") {
     if (!is.vector(example_assignment_path)) {
       stop("example_assignment_path must be a single string or a vector of strings")
     } else if (!all(stringr::str_detect(example_assignment_path, example_student_identifier))) {
@@ -37,7 +37,6 @@ core_assist_grading <- function(
     }
   } 
 
-  
   # Check that feedback, grading progress log and final grade sheets paths 
   # include correct directories
   paths_to_write_to <- c(
@@ -178,18 +177,23 @@ core_assist_grading <- function(
         cat("\n")
         
         if (continue_grading) {
-          # Get assignment_path
-          assignment_path <- unlist(
-            stringr::str_split(grading_progress_log$assignment_path[i], ", ")
-          )
           
-          doc_id <- NULL
-          
-          for(j in 1:length(assignment_path)) {
-            rstudioapi::navigateToFile(assignment_path[j], moveCursor = FALSE)
-            # Need short pause so documentId grabs the correct document
-            Sys.sleep(1)
-            doc_id[j] <- rstudioapi::documentId()
+          if (grading_progress_log$assignment_path[i] != "no_submissions") {
+            assignment_path <- unlist(
+              stringr::str_split(grading_progress_log$assignment_path[i], ", ")
+            )
+            
+            doc_id <- NULL
+            
+            for(j in 1:length(assignment_path)) {
+              # Open file
+              rstudioapi::navigateToFile(assignment_path[j], moveCursor = FALSE)
+              
+              # Need short pause so documentId() grabs the correct document
+              Sys.sleep(1)
+              doc_id[j] <- rstudioapi::documentId()
+            }
+            
           }
           
           temp_obj <- grade_student(
@@ -203,9 +207,11 @@ core_assist_grading <- function(
             questions_to_grade = questions_to_grade
           )
           
-          # Close assignment
-          for(j in 1:length(assignment_path)) {
-            invisible(rstudioapi::documentClose(id = doc_id[j], save = FALSE))
+          if (example_assignment_path != "no_submissions") {
+            for(j in 1:length(assignment_path)) {
+              # Close assignment
+              invisible(rstudioapi::documentClose(id = doc_id[j], save = FALSE))
+            }
           }
           
           # Check if grading has been suspended

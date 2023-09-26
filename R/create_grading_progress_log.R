@@ -1,10 +1,20 @@
 #' Prepares grading progress log for gradetools internal use
 #'
-#' @param grading_progress_log_path string; assist-grading() functions save a file which includes information for gradetools's internal use. This is that path for that file. Must be a .csv
-#' @param example_assignment_path string or a vector of strings; file paths to all of the assignments to be graded for one student. This file path structure will be used to determine where the other assignments to be graded are located. The student identifier has to be present somewhere in each of the file paths. The student identifier is assumed to be the only part of the example_assignment_path unique to the student
-#' @param example_feedback_path string; file path to one of the assignment feedback files that will be generated as the user grades. This file path structure will be used to determine where the other feedback files will be stored. The student identifier must be present somewhere in the file name and must be the only part of the file path unique to the student. The extension of the feedback file must be one of the following: ".Rmd", ".docx", ".html", ".pdf"
-#' @param example_student_identifier string; a student identifier (e.g. name, id, id number, GitHub user name) that is used to identify the student on the roster. This needs to be present somewhere in the example_assignment_path. Currently, if team_grading is set to TRUE the team_identifier needs to be present in this path instead of the student_identifier.
-#' @param roster_path string; file path to the class roster csv containing a column named student_identifier. If team_grading is set to TRUE then the class roster also needs to contain a column named team_identifier
+#' @param grading_progress_log_path string; assist-grading() functions save a file which includes information for gradetools's internal use. 
+#'     This is that path for that file. Must be a .csv
+#' @param example_assignment_path string; file path to one of the assignments to be graded. 
+#'     This file path structure will be used to determine where the other assignments to be graded are located. 
+#'     The student identifier has to be present somewhere in the file path.
+#'     If specified as "no_submissions", grading will proceed without automatic interaction with assignments (i.e opening and closing assignments).
+#' @param example_feedback_path string; file path to one of the assignment feedback files that will be generated as the user grades. 
+#'     This file path structure will be used to determine where the other feedback files will be stored. 
+#'     The student identifier must be present somewhere in the file name and must be the only part of the file path unique to the student. 
+#'     The extension of the feedback file must be one of the following: "Rmd", "md", "docx", "html", "pdf". 
+#'     These file types (except the first) will be knitted to: GitHub, Word, html, and pdf documents respectively
+#' @param example_student_identifier string; a student identifier (e.g. name, id, id number, GitHub user name) that is used to identify the student on the roster. 
+#'     This needs to be present somewhere in the example_assignment_path. Currently, if team_grading is set to TRUE the team_identifier needs to be present in this path instead of the student_identifier.
+#' @param roster_path string; file path to the class roster csv containing a column named student_identifier. 
+#'     If team_grading is set to TRUE then the class roster also needs to contain a column named team_identifier
 #' @param github_issues logical, whether the grader wants to be given the option to create an issue in students' repos or not
 #' @param team_grading logical, indicates if any assignment submission is associated with multiple students (e.g. team projects)
 #'
@@ -94,44 +104,49 @@ create_grading_progress_log <- function(
     mutate(assignment_path = NA) %>% 
     mutate(assignment_missing = FALSE)
   
-
-  assignment_path <- rep(NA, length(example_assignment_path))
-  
-  # Check file exists at assignment file paths 
-  no_assignment_file_paths_work <- TRUE
-  
-  for(i in 1:length(grading_progress_log_new$student_identifier)) {
-    for (j in 1:length(example_assignment_path)) {
-      assignment_path[j] <- stringr::str_replace_all(
+  if (example_assignment_path == "no_submissions") {
+    grading_progress_log_new$assignment_path <- example_assignment_path
+    
+  } else {
+    assignment_path <- rep(NA, length(example_assignment_path))
+    
+    # Check file exists at assignment file paths 
+    no_assignment_file_paths_work <- TRUE
+    
+    for(i in 1:length(grading_progress_log_new$student_identifier)) {
+      for (j in 1:length(example_assignment_path)) {
+        assignment_path[j] <- stringr::str_replace_all(
           example_assignment_path[j], 
           pattern = example_student_identifier, 
           replacement = grading_progress_log_new$student_identifier[i]
         )
-      
-      if(file.exists(assignment_path[j])) {
-        # We need to know if none of the assignment file paths work
-        no_assignment_file_paths_work <- FALSE
         
-      } else {
-        # Note those without an assignment
-        grading_progress_log_new$assignment_missing[i] <- TRUE
+        if(file.exists(assignment_path[j])) {
+          # We need to know if none of the assignment file paths work
+          no_assignment_file_paths_work <- FALSE
+          
+        } else {
+          # Note those without an assignment
+          grading_progress_log_new$assignment_missing[i] <- TRUE
+          
+        }
         
       }
       
+      # Save assignment paths as one string per student
+      grading_progress_log_new$assignment_path[i] <- paste(
+        assignment_path, 
+        collapse = ", "
+      )
+      
     }
     
-    # Save assignment paths as one string per student
-    grading_progress_log_new$assignment_path[i] <- paste(
-      assignment_path, 
-      collapse = ", "
-    )
-
-  }
-  
-  if (no_assignment_file_paths_work) {
-    stop(
-      "No assignment file paths matched to assignment files.\nPlease check that the student identifier matched those in the file paths."
-    )
+    if (no_assignment_file_paths_work) {
+      stop(
+        "No assignment file paths matched to assignment files.\nPlease check that the student identifier matched those in the file paths."
+      )
+    }
+    
   }
   
   # Merge old grade sheet if present or format new one with new columns
