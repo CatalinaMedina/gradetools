@@ -35,7 +35,7 @@ grade_student <- function(
   invalid_fbk_message <- 'Please enter a valid prompt code, or enter "s" to stop.'
   
   qs_to_grade_wo_gf <- questions_to_grade[questions_to_grade != "general_feedback"]
-  previously_graded_qs <- unlist(str_split(curr_row$graded_qs, pattern = "&&&"))
+  previously_graded_qs <- unlist(stringr::str_split(curr_row$graded_qs, pattern = "&&&"))
   
   # Start at the first ungraded question and go through all rubric prompts
   q <- 1
@@ -62,7 +62,7 @@ grade_student <- function(
         display_prompt_again <- TRUE
         
       } else if (question_fbk == "p") { 
-        question_comment <- dlg_input(
+        question_comment <- svDialogs::dlg_input(
           paste(
             "Type personalized feedback and press [ok].",
             "To cancel typing personalized feedback, press [cancel].",
@@ -86,7 +86,7 @@ grade_student <- function(
         display_prompt_again <- TRUE
         
         if (curr_q == "general_feedback") {
-          move_to_next_q <- ok_cancel_box(paste(
+          move_to_next_q <- svDialogs::ok_cancel_box(paste(
             "Press [ok] to move on to grade the next submission.",
             "Press [cancel] to continue providing general feedback.",
             sep = "\n"
@@ -117,8 +117,8 @@ grade_student <- function(
         store_feedback_codes <- TRUE
         
       } else { 
-        question_fbk <- str_replace_all(question_fbk, c(" " = "", "--" = "---"))
-        q_fbk_separated <- unlist(str_split(question_fbk, "---"))
+        question_fbk <- stringr::str_replace_all(question_fbk, c(" " = "", "--" = "---"))
+        q_fbk_separated <- unlist(stringr::str_split(question_fbk, "---"))
         
         if (curr_q != "general_feedback") {
           valid_fbk_codes <- c(
@@ -138,7 +138,7 @@ grade_student <- function(
           store_feedback_codes <- TRUE
           
         } else {
-          dlg_message(invalid_fbk_message, type = "ok")
+          svDialogs::dlg_message(invalid_fbk_message, type = "ok")
           display_prompt_again <- TRUE
           
         }
@@ -181,7 +181,7 @@ grade_student <- function(
     } # End storing question feedback
     
     grading_progress_log[row, ] <- curr_row
-    write_csv(grading_progress_log, file = grading_progress_log_path)
+    readr::write_csv(grading_progress_log, file = grading_progress_log_path)
     
     # Move onto next question if valid feedback codes were provided
     if (!display_prompt_again) {

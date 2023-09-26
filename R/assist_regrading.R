@@ -51,10 +51,10 @@ assist_regrading <- function(
     grading_progress_log_path,
     show_col_types = FALSE,
     col_types = cols(
-      .default = col_character(),
-      assignment_missing = col_logical(),
-      grade_student = col_logical(),
-      last_time_graded = col_datetime(),
+      .default = readr::col_character(),
+      assignment_missing = readr::col_logical(),
+      grade_student = readr::col_logical(),
+      last_time_graded = readr::col_datetime(),
     )
   )
 
@@ -100,11 +100,11 @@ assist_regrading <- function(
     
     ungraded_present_message <- paste0(
       "The following students_to_regrade were not previously graded: \n",
-      str_c(ids_to_be_graded_short, collapse = ",\n"), 
+      stringr::str_c(ids_to_be_graded_short, collapse = ",\n"), 
       "\nWould you still like to grade the previously ungraded students?"
     )
     
-    grade_ungraded <- dlg_message(ungraded_present_message, type = "yesno")$res
+    grade_ungraded <- svDialogs::dlg_message(ungraded_present_message, type = "yesno")$res
     
     if (grade_ungraded == "no") {
       grading_progress_log$grade_student[id_ungraded_to_be_graded] <- FALSE
@@ -160,7 +160,7 @@ assist_regrading <- function(
         sep = "\n"
       )
       
-      continue_grading <- ok_cancel_box(begin_message)
+      continue_grading <- svDialogs::ok_cancel_box(begin_message)
       
       if (!continue_grading) {
         cat(paste0(
@@ -178,16 +178,16 @@ assist_regrading <- function(
         
         # Get assignment_path
         assignment_path <- unlist(
-          str_split(grading_progress_log$assignment_path[i], ", ")
+          stringr::str_split(grading_progress_log$assignment_path[i], ", ")
         )
         
         doc_id <- NULL
         
         for(j in 1:length(assignment_path)) {
-          navigateToFile(assignment_path[j])
+          rstudioapi::navigateToFile(assignment_path[j])
           # Need short pause so documentId grabs the correct document
           Sys.sleep(1)
-          doc_id[j] <- documentId()
+          doc_id[j] <- rstudioapi::documentId()
         }
         
         for (q in questions_to_regrade) {
@@ -227,7 +227,7 @@ assist_regrading <- function(
             if (is.null(temp_obj)) {
               grading_progress_log <- curr_grading_progress_log
               
-              write_csv(grading_progress_log, file = grading_progress_log_path)
+              readr::write_csv(grading_progress_log, file = grading_progress_log_path)
               
               cat(paste0(
                 "\nGrading has been suspended.",
@@ -248,7 +248,7 @@ assist_regrading <- function(
         
         # Close assignment
         for(j in 1:length(assignment_path)) {
-          invisible(documentClose(id = doc_id[j], save = FALSE))
+          invisible(rstudioapi::documentClose(id = doc_id[j], save = FALSE))
         }
         
       }
@@ -260,10 +260,10 @@ assist_regrading <- function(
       grading_progress_log_path,
       show_col_types = FALSE,
       col_types = cols(
-        .default = col_character(),
-        assignment_missing = col_logical(),
-        grade_student = col_logical(),
-        last_time_graded = col_datetime()
+        .default = readr::col_character(),
+        assignment_missing = readr::col_logical(),
+        grade_student = readr::col_logical(),
+        last_time_graded = readr::col_datetime()
       )
     )
     

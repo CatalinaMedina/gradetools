@@ -8,6 +8,7 @@
 #' @param team_grading logical, indicates if any assignment submission is associated with multiple students (e.g. team projects)
 #' 
 #' @import dplyr
+#' @improt stringr str_split
 #' 
 #' @keywords internal
 #'
@@ -78,13 +79,19 @@ create_final_grade_sheet <- function(
   
   ind_cols_to_remove <- colnames(final_grade_sheet) %in% cols_to_remove
   
-  final_grade_sheet <- final_grade_sheet[, !(ind_cols_to_remove)]
+  final_grade_sheet <- final_grade_sheet %>% 
+    select(-(ind_cols_to_remove)) %>%
+    relocate(
+      student_identifier, grade, grade_decomposition, 
+      .after = last_col()
+    )
+  
   
   if (team_grading) {
     brief_roster <- final_grade_sheet %>% 
       select(student_identifier, students_in_team)
     
-    split_student_ids <- str_split(
+    split_student_ids <- stringr::str_split(
       final_grade_sheet$students_in_team, 
       pattern = "&&&"
     )
@@ -100,7 +107,11 @@ create_final_grade_sheet <- function(
     final_grade_sheet <- final_grade_sheet %>% 
       select(-students_in_team) %>% 
       rename(team_identifier = student_identifier) %>% 
-      full_join(brief_roster, by = "team_identifier")
+      full_join(brief_roster, by = "team_identifier") %>% 
+      relocate(
+        student_identifier, team_identifier, grade, grade_decomposition, 
+        .after = last_col()
+      )
     
   }
   
@@ -108,12 +119,7 @@ create_final_grade_sheet <- function(
     unlink(final_grade_sheet_path)
   }
   
-  final_grade_sheet %>% 
-    relocate(
-      student_identifier, team_identifier, grade, grade_decomposition, 
-      .after = last_col()
-    ) %>% 
-    write_csv(final_grade_sheet_path)
+  readr::write_csv(final_grade_sheet, final_grade_sheet_path)
   
   ungraded_message <- paste(
     "\nNot all questions have been graded,", 

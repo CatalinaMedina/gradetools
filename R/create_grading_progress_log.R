@@ -38,7 +38,7 @@ create_grading_progress_log <- function(
     grading_progress_log_new <- grading_progress_log_new %>% 
       mutate(team_identifier = as.character(team_identifier)) %>% 
       group_by(team_identifier) %>% 
-      summarize(students_in_team = str_c(
+      summarize(students_in_team = stringr::str_c(
         student_identifier, 
         collapse = "&&&"
       )) %>% 
@@ -48,12 +48,12 @@ create_grading_progress_log <- function(
   
   # Make feedback file paths, saved as .Rmd and the one to be knitted to
   grading_progress_log_new <- grading_progress_log_new %>% 
-    mutate(feedback_path_Rmd = str_replace_all(
+    mutate(feedback_path_Rmd = stringr::str_replace_all(
       as.character(fs::path_ext_set(example_feedback_path, ext = "Rmd")), 
       pattern = example_student_identifier, 
       replacement = grading_progress_log_new$student_identifier
     )) %>% 
-    mutate(feedback_path_to_be_knitted = str_replace_all(
+    mutate(feedback_path_to_be_knitted = stringr::str_replace_all(
       as.character(example_feedback_path), 
       pattern = example_student_identifier, 
       replacement = grading_progress_log_new$student_identifier
@@ -72,7 +72,7 @@ create_grading_progress_log <- function(
   
   for(i in 1:length(grading_progress_log_new$student_identifier)) {
     for (j in 1:length(example_assignment_path)) {
-      assignment_path[j] <- str_replace_all(
+      assignment_path[j] <- stringr::str_replace_all(
           example_assignment_path[j], 
           pattern = example_student_identifier, 
           replacement = grading_progress_log_new$student_identifier[i]
@@ -189,7 +189,7 @@ create_grading_progress_log <- function(
       sep = "\n"
     )
     
-    dlg_message(grading_progress_log_message, type = "ok")
+    svDialogs::dlg_message(grading_progress_log_message, type = "ok")
     
   } 
   

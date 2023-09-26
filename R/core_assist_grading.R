@@ -31,7 +31,7 @@ core_assist_grading <- function(
   # Check example_assignment_path is valid
   if (!is.vector(example_assignment_path)) {
     stop("example_assignment_path must be a single string or a vector of strings")
-  } else if (!all(str_detect(example_assignment_path, example_student_identifier))) {
+  } else if (!all(stringr::str_detect(example_assignment_path, example_student_identifier))) {
     stop("The example_student_identifier must be present in the example_assignment_path.")
   }
   
@@ -57,8 +57,8 @@ core_assist_grading <- function(
   )
   
   for (p in paths_to_write_to) {
-    if (str_detect(p, "/")) {
-      if (!dir.exists(path_dir(p))) {
+    if (stringr::str_detect(p, "/")) {
+      if (!dir.exists(fs::path_dir(p))) {
        stop(paste("This directory seems to be incorrect:", p))
          
       }
@@ -66,8 +66,8 @@ core_assist_grading <- function(
   }
   
   # Check that grading progress log and final grade sheet paths are to .csv files
-  temp_file_ext <- path_ext(grading_progress_log_path)
-  final_file_ext <- path_ext(final_grade_sheet_path)
+  temp_file_ext <- fs::path_ext(grading_progress_log_path)
+  final_file_ext <- fs::path_ext(final_grade_sheet_path)
   if (!all(c(temp_file_ext, final_file_ext) %in% c("csv"))) {
     stop("The extension of grading_progress_log_path and final_grade_sheet_path must be .csv")
     
@@ -80,16 +80,16 @@ core_assist_grading <- function(
   } 
     
   # Check example_feedback_path is valid
-  feedback_file_ext <- path_ext(example_feedback_path)
+  feedback_file_ext <- fs::path_ext(example_feedback_path)
   
   if (!(feedback_file_ext %in% c("Rmd", "docx", "html", "pdf", "md"))) {
     stop("The extension of the example_feedback_path must be one of the following: '.Rmd', '.docx', '.html', '.pdf'.")
-  } else if (!str_detect(example_feedback_path, example_student_identifier)) {
+  } else if (!stringr::str_detect(example_feedback_path, example_student_identifier)) {
     stop("The example_student_identifier must be present in the example_feedback_path file name.")
   } 
   
   
-  roster <- read_csv(roster_path, show_col_types = FALSE) %>%
+  roster <- readr::read_csv(roster_path, show_col_types = FALSE) %>%
     mutate(across(everything(), as.character))
   
   if (sum(colnames(roster) == "student_identifier") != 1) {
@@ -189,7 +189,7 @@ core_assist_grading <- function(
               ".\n This assignment was previously partially graded, with the last edit performed at: ",
               grading_progress_log$last_time_graded[i],
               ".\n The following questions were already graded: ",
-              str_replace_all(
+              stringr::str_replace_all(
                 grading_progress_log$graded_qs[i], 
                 pattern = "&&&", 
                 replacement = ", "
@@ -214,23 +214,23 @@ core_assist_grading <- function(
           
         }
         
-        continue_grading <- ok_cancel_box(begin_message)
+        continue_grading <- svDialogs::ok_cancel_box(begin_message)
         
         cat("\n")
         
         if (continue_grading) {
           # Get assignment_path
           assignment_path <- unlist(
-            str_split(grading_progress_log$assignment_path[i], ", ")
+            stringr::str_split(grading_progress_log$assignment_path[i], ", ")
           )
           
           doc_id <- NULL
           
           for(j in 1:length(assignment_path)) {
-            navigateToFile(assignment_path[j], moveCursor = FALSE)
+            rstudioapi::navigateToFile(assignment_path[j], moveCursor = FALSE)
             # Need short pause so documentId grabs the correct document
             Sys.sleep(1)
-            doc_id[j] <- documentId()
+            doc_id[j] <- rstudioapi::documentId()
           }
           
           temp_obj <- grade_student(
@@ -246,7 +246,7 @@ core_assist_grading <- function(
           
           # Close assignment
           for(j in 1:length(assignment_path)) {
-            invisible(documentClose(id = doc_id[j], save = FALSE))
+            invisible(rstudioapi::documentClose(id = doc_id[j], save = FALSE))
           }
           
           # Check if grading has been suspended
@@ -288,10 +288,10 @@ core_assist_grading <- function(
       grading_progress_log_path,
       show_col_types = FALSE,
       col_types = cols(
-        .default = col_character(),
-        assignment_missing = col_logical(),
-        grade_student = col_logical(),
-        last_time_graded = col_datetime()
+        .default = readr::col_character(),
+        assignment_missing = readr::col_logical(),
+        grade_student = readr::col_logical(),
+        last_time_graded = readr::col_datetime()
       )
     )
     

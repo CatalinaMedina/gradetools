@@ -66,8 +66,8 @@ create_rubric_prompts <- function(rubric_list, github_issues) {
       "*******************************************",
       "Enter one or more of the following options,",
       "use -- to separate multiple items.",
-      str_c(q_prompts_code_and_messages, collapse = "\n"),
-      str_c(all_questions_prompts, collapse = "\n"),
+      stringr::str_c(q_prompts_code_and_messages, collapse = "\n"),
+      stringr::str_c(all_questions_prompts, collapse = "\n"),
       "Or enter one of the following,",
       sep = "\n"
     )
@@ -107,7 +107,7 @@ create_rubric_prompts <- function(rubric_list, github_issues) {
       "*******************************************",
       "Enter one or more of the following options,", 
       "use -- to separate multiple items.",
-      str_c(general_feedback_prompts_code_and_messages, collapse = "\n"),
+      stringr::str_c(general_feedback_prompts_code_and_messages, collapse = "\n"),
       "Or enter one of the following,",
       sep = "\n"
     )
