@@ -40,7 +40,7 @@ If team_grading is set to TRUE then the class roster also needs to contain a col
 \item{team_grading}{logical, indicates if any assignment submission is associated with multiple students (e.g. team projects)}
 }
 \value{
-tibble; with the columns read in from roster_path, including student_identifier, and two new columns, feedback_path_Rmd, feedback_path_to_be_knitted, and assignment_path containing the file paths to the student assignment files and student feedback files
+tibble; with the columns read in from roster_path, including student_identifier, and two new columns, feedback_path_qmd, feedback_path_to_be_rendered, and assignment_path containing the file paths to the student assignment files and student feedback files
 }
 \description{
 Prepares grading progress log for gradetools internal use

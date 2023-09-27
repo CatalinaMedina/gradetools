@@ -18,7 +18,7 @@
 #' @param github_issues logical, whether the grader wants to be given the option to create an issue in students' repos or not
 #' @param team_grading logical, indicates if any assignment submission is associated with multiple students (e.g. team projects)
 #'
-#' @return tibble; with the columns read in from roster_path, including student_identifier, and two new columns, feedback_path_Rmd, feedback_path_to_be_knitted, and assignment_path containing the file paths to the student assignment files and student feedback files
+#' @return tibble; with the columns read in from roster_path, including student_identifier, and two new columns, feedback_path_qmd, feedback_path_to_be_rendered, and assignment_path containing the file paths to the student assignment files and student feedback files
 #' 
 #' @import stringr
 #' @import dplyr
@@ -88,12 +88,12 @@ create_grading_progress_log <- function(
   
   # Make feedback file paths, saved as .Rmd and the one to be knitted to
   grading_progress_log_new <- grading_progress_log_new %>% 
-    mutate(feedback_path_Rmd = stringr::str_replace_all(
-      as.character(fs::path_ext_set(example_feedback_path, ext = "Rmd")), 
+    mutate(feedback_path_qmd = stringr::str_replace_all(
+      as.character(fs::path_ext_set(example_feedback_path, ext = "qmd")), 
       pattern = example_student_identifier, 
       replacement = grading_progress_log_new$student_identifier
     )) %>% 
-    mutate(feedback_path_to_be_knitted = stringr::str_replace_all(
+    mutate(feedback_path_to_be_rendered = stringr::str_replace_all(
       as.character(example_feedback_path), 
       pattern = example_student_identifier, 
       replacement = grading_progress_log_new$student_identifier

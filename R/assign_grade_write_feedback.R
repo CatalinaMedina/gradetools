@@ -245,40 +245,51 @@ assign_grade_write_feedback <- function(
   # Delete student's old feedback if it exists and write a new one
   # This is important because the rubric could have changed
   if(grading_progress_log_row$grading_status != "ungraded") {
-    unlink(grading_progress_log_row$feedback_path_Rmd)
-    unlink(grading_progress_log_row$feedback_path_to_be_knitted)
+    unlink(grading_progress_log_row$feedback_path_qmd)
+    unlink(grading_progress_log_row$feedback_path_to_be_rendered)
     
   }
   
-  fs::file_create(grading_progress_log_row$feedback_path_Rmd)
+  fs::file_create(grading_progress_log_row$feedback_path_qmd)
   
   # Determining type of file to knit feedback to
   feedback_file_ext <- as.character(fs::path_ext(
-    grading_progress_log_row$feedback_path_to_be_knitted)[1]
+    grading_progress_log_row$feedback_path_to_be_rendered)[1]
   )
   
-  feedback_knit_type <- case_when(
-    feedback_file_ext == "Rmd" ~ "html_document",
-    feedback_file_ext == "html" ~ "html_document",
-    feedback_file_ext == "docx" ~ "word_document",
-    feedback_file_ext == "pdf" ~ "pdf_document",
-    feedback_file_ext == "md" ~ "github_document",
-    TRUE ~ "NA",
-  )
+  if(feedback_file_ext == "qmd") {
+    feedback_file_ext <- "html"
+  }
   
-  # Create YAML section in feedback file
-  yaml <- paste(
-    "---",
-    'title: "Feedback"',
-    paste0('output: ', feedback_knit_type), 
-    "---\n",
-    sep = "\n"
-  )
+  if (feedback_file_ext == "Rmd") {
+    grading_progress_log_row$feedback_path_qmd <- fs::path_ext_set(
+      grading_progress_log_row$feedback_path_qmd, 
+      "Rmd"
+    )
+    
+    yaml <- paste(
+      "---",
+      "title: 'Feedback'",
+      "output: html_document", 
+      "---\n",
+      sep = "\n"
+    )
+    
+  } else {
+    yaml <- paste(
+      "---",
+      "title: 'Feedback'",
+      paste0("format: ", feedback_file_ext), 
+      "---\n",
+      sep = "\n"
+    )
+    
+  }
   
   # Write feedback in feedback file
   readr::write_file(
     x = paste0(yaml, "\n", feedback , "\n\n"), 
-    file = grading_progress_log_row$feedback_path_Rmd, 
+    file = grading_progress_log_row$feedback_path_qmd, 
     append = TRUE
   )
   

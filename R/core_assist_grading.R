@@ -8,7 +8,6 @@
 #' @import stringr
 #' @import rstudioapi
 #' @import svDialogs
-#' @import rmarkdown
 #' @import fs
 #' 
 #' @keywords internal
@@ -71,8 +70,8 @@ core_assist_grading <- function(
   # Check example_feedback_path is valid
   feedback_file_ext <- fs::path_ext(example_feedback_path)
   
-  if (!(feedback_file_ext %in% c("Rmd", "docx", "html", "pdf", "md"))) {
-    stop("The extension of the example_feedback_path must be one of the following: '.Rmd', '.docx', '.html', '.pdf'.")
+  if (!(feedback_file_ext %in% c("md", "Rmd", "qmd", "html", "pdf", "docx"))) {
+    stop("The extension of the example_feedback_path must be one of the following: '.md', '.Rmd', '.qmd', '.html', '.pdf', '.docx'.")
   } else if (!stringr::str_detect(example_feedback_path, example_student_identifier)) {
     stop("The example_student_identifier must be present in the example_feedback_path file name.")
   } 
@@ -252,7 +251,7 @@ core_assist_grading <- function(
     grading_progress_log <- readr::read_csv(
       grading_progress_log_path,
       show_col_types = FALSE,
-      col_types = cols(
+      col_types = readr::cols(
         .default = readr::col_character(),
         assignment_missing = readr::col_logical(),
         grade_student = readr::col_logical(),
@@ -273,52 +272,15 @@ core_assist_grading <- function(
     )
   }
   
-  some_students_graded <- any(grading_progress_log$grading_status != "ungraded")
-   
-  if (feedback_file_ext %in% c("docx", "html", "pdf", "md") && some_students_graded) {
+  if(!(feedback_file_ext %in% c("Rmd", "qmd"))) {
+    render_feedback_now <- svDialogs::dlg_message(
+      "Would you like the feedback files to be rendered now?",
+      type = "yesno"
+    )$res
     
-    # Let the user know that feedback is being knitted
-    cat(paste0(
-      "\nTrying to knit feedback files to ", 
-      feedback_file_ext, " format...\n"
-    ))
-    
-    # Try to render feedback files
-    tryCatch(               
-      # Specifying expression
-      expr = {              
-        paths_returned <- mapply(
-          render,
-          grading_progress_log$feedback_path_Rmd[grading_progress_log$grading_status != "ungraded"],
-          MoreArgs = list(clean = TRUE, quiet = TRUE)  
-        )
-        
-        cat(paste("\n...Succeeded!\n\n"))
-        
-        unlink(grading_progress_log$feedback_path_Rmd)
-        
-        if (feedback_file_ext == "md") {
-          unlink(fs::path_ext_set(
-            path = grading_progress_log$feedback_path_Rmd,
-            ext = "html"
-          ))
-          
-        }
-        
-      },
-      
-      # Specifying error message
-      error = function(e){         
-        cat(paste(
-          "There was an error when trying to render the feedback file in the specified format.",
-          "\nCompiling pdf's in R requires additional software.",
-          "We suggest you rerun the assist grading function with a different feedback_file_format.",
-          "All of your progressed will be saved in the grading progress log.",
-         sep = "\n"
-        ))
-      }
-    )
-    
+    if (render_feedback_now == "yes") {
+      render_feedback(grading_progress_log = grading_progress_log) 
+    }
   }
   
 }

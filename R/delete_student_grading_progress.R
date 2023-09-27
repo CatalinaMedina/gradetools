@@ -36,9 +36,9 @@ delete_student_grading_progress <- function(
   curr_row <- grading_progress_log[row_to_change, ]
   
   # Delete old feedback file
-  unlink(curr_row$feedback_path_Rmd)
+  unlink(curr_row$feedback_path_qmd)
   # Delete knitted feedback if present
-  unlink(curr_row$feedback_path_to_be_knitted)
+  unlink(curr_row$feedback_path_to_be_rendered)
   
   # Set feedback_pushed = FALSE if column is present
   if ("feedback_pushed" %in% colnames(curr_row)){
